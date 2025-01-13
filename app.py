@@ -1,64 +1,128 @@
+import time
+import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import time
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+
+# Selenium WebDriver setup for Chrome
+options = Options()
+options.add_argument("--headless")  # Runs the browser in the background
 s = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=s, options=options)
 
-from bs4 import BeautifulSoup
+# Function to scrape Samsung phone data
+def scrape_samsung():
+    driver.get('https://www.cashify.in/sell-old-mobile-phone')
+    time.sleep(2)
+    samsung = driver.find_element(by=By.XPATH, value='//*[@id="__csh"]/main/main/div/div[2]/div[1]/div[2]/div/section/div/div[1]/div[4]/div/div[2]/div[1]/div/a[3]/div/img')
+    samsung.click()
+    time.sleep(5)
 
-driver = webdriver.Chrome(service = s)
+    # Scroll to load all content
+    prevheight = driver.execute_script('return document.body.scrollHeight')
+    while True:
+        driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+        time.sleep(2)
+        currheight = driver.execute_script('return document.body.scrollHeight')
+        if currheight == prevheight:
+            break
+        prevheight = currheight
 
-driver.get('https://www.cashify.in/sell-old-mobile-phone?__utmrg=BB_Search_Brand_021224_Central&utm_source=google&utm_medium=cpc&utm_campaign=BB_Search_Brand_021224_Central&utm_id=15069140359&utm_term=conversion&__utmrg=brand2c&utm_source=google&utm_medium=cpc&utm_campaign=BB_Search_Brand_021224_Central&utm_term=cashify&utm_content=555967663159&gad_source=1&gclid=CjwKCAiAhP67BhAVEiwA2E_9g6zOGKGAZOzAKTR67jlpw5b5XVpi1xkeoKjbnriMJAtuFzxLWDNSaBoCqNcQAvD_BwE')
+    time.sleep(5)
 
-time.sleep(2)
-samsung = driver.find_element(by=By.XPATH,value='//*[@id="__csh"]/main/main/div/div[2]/div[1]/div[2]/div/section/div/div[1]/div[4]/div/div[2]/div[1]/div/a[3]/div/img')
+    # Extract the phone model data from the loaded page
+    target_div = driver.find_element(By.XPATH, '/html/body/main/main/div/div[2]/div[2]/div[1]/div/div/div/div[4]')
+    div_html = target_div.get_attribute('outerHTML')
+    with open('samsung_models.html', 'w', encoding='utf-8') as f:
+        f.write(div_html)
 
-samsung.click()
-time.sleep(5)
+    with open('samsung_models.html', 'r', encoding='utf-8') as file:
+        html_content = file.read()
 
-height = driver.execute_script('return document.body.scrollHeight')
-prevheight = height
+    soup = BeautifulSoup(html_content, 'lxml')
+    samsung_models = [img['alt'] for img in soup.find_all('img', alt=True)]
     
-while True:
-   driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-   time.sleep(2)
-   currheight = driver.execute_script('return document.body.scrollHeight')
-        
-   print(f"Previous Height: {prevheight}")
-   print(f"Current Height: {currheight}")
-        
-   if currheight == prevheight:
-      print("No more content to load.")
-      break
-        
-   prevheight = currheight
-   
-time.sleep(10)
+    return {'Samsung': samsung_models}
 
-target_div = driver.find_element(By.XPATH, '/html/body/main/main/div/div[2]/div[2]/div[1]/div/div/div/div[4]')  
-time.sleep(10)
-div_html = target_div.get_attribute('outerHTML')
+# Function to scrape Apple phone data
+def scrape_apple():
+    driver.get('https://www.cashify.in/buy-sell-used-mobile-phones')
+    time.sleep(2)
+    apple = driver.find_element(by=By.XPATH, value='//*[@id="__csh"]/main/main/div/div/div/div[2]/div[3]/div/section/div/div[1]/div[4]/div/div[2]/div[1]/div/a[1]')
+    apple.click()
+    time.sleep(5)
 
-time.sleep(2)
-with open('models.html', 'w', encoding='utf-8') as f:
-    f.write(div_html)
+    # Scroll to load all content
+    prevheight = driver.execute_script('return document.body.scrollHeight')
+    while True:
+        driver.execute_script('window.scrollTo(0,document.body.scrollHeight)')
+        time.sleep(2)
+        currheight = driver.execute_script('return document.body.scrollHeight')
+        if currheight == prevheight:
+            break
+        prevheight = currheight
 
+    time.sleep(5)
 
+    # Extract the phone model data from the loaded page
+    target_div = driver.find_element(by=By.XPATH, value='//*[@id="__csh"]/main/main/div/div[2]/div[2]/div[1]/div/div/div/div[3]/div')
+    div_html = target_div.get_attribute('outerHTML')
+    with open('apple_models.html', 'w', encoding='utf-8') as f:
+        f.write(div_html)
 
-from bs4 import BeautifulSoup
+    with open('apple_models.html', 'r', encoding='utf-8') as file:
+        html_content = file.read()
 
-with open('models.html', 'r', encoding='utf-8') as file:
-    html_content = file.read()
+    soup = BeautifulSoup(html_content, 'lxml')
+    apple_models = [img['alt'] for img in soup.find_all('img', alt=True)]
+    
+    return {'Apple': apple_models}
 
-soup = BeautifulSoup(html_content, 'lxml')
+# Scrape both Apple and Samsung data
+samsung_data = scrape_samsung()
+apple_data = scrape_apple()
 
-model_images = soup.find_all('img', alt=True)
+# Combine both Samsung and Apple data
+combined_data = {**samsung_data, **apple_data}
 
-model_names = [img['alt'] for img in model_images ]
+# Function to filter data based on user input
+def filter_phones(brand, model, ram, rom, color):
+    # Mock filtering function
+    return [f"{brand} {model} - {ram}GB RAM, {rom}GB ROM, {color} color"]
 
-for name in model_names:
-    print(name)
+# Streamlit UI
+st.title("Smart Deal Finder")
 
+# Dropdown for selecting brand
+brands = list(combined_data.keys())
+selected_brand = st.selectbox("Select Brand", brands)
 
+# Dropdown for selecting model based on the selected brand
+selected_model = st.selectbox("Select Model", combined_data[selected_brand])
+
+# Dropdown for RAM
+ram_options = [4, 6, 8, 12]  # Modify based on your data
+selected_ram = st.selectbox("Select RAM", ram_options)
+
+# Dropdown for ROM
+rom_options = [64, 128, 256, 512]  # Modify based on your data
+selected_rom = st.selectbox("Select ROM", rom_options)
+
+# Dropdown for color
+color_options = ["Black", "White", "Blue", "Red"]  # Modify based on your data
+selected_color = st.selectbox("Select Color", color_options)
+
+# Button to show filtered result
+if st.button("Find Deals"):
+    filtered_phones = filter_phones(selected_brand, selected_model, selected_ram, selected_rom, selected_color)
+    
+    # Display the filtered phones
+    st.write("Available Phones:")
+    for phone in filtered_phones:
+        st.write(phone)
+
+# Cleanup: Close the Selenium WebDriver
+driver.quit()
