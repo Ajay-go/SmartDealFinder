@@ -1,26 +1,26 @@
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
-with open('models.html', 'r', encoding='utf-8') as file:
-    html_content = file.read()
+# with open('models.html', 'r', encoding='utf-8') as file:
+#     html_content = file.read()
 
-soup = BeautifulSoup(html_content, 'lxml')
+# soup = BeautifulSoup(html_content, 'lxml')
 
-model_images = soup.find_all('img', alt=True)
+# model_images = soup.find_all('img', alt=True)
 
-model_names = [img['alt'] for img in model_images ]
+# model_names = [img['alt'] for img in model_images ]
 
-samsung_dict  = {'samsung' :[]}
-for name in model_names:
-    samsung_dict['samsung'].append(name)
+# samsung_dict  = {'samsung' :[]}
+# for name in model_names:
+#     samsung_dict['samsung'].append(name)
 
-print(samsung_dict)
+# print(samsung_dict)
 
 
 ############################################################################
 
 from bs4 import BeautifulSoup
 
-with open('model.html','r', encoding='utf-8') as file:
+with open('apple_models.html','r', encoding='utf-8') as file:
     html_content = file.read()
     
 soup = BeautifulSoup(html_content,'lxml')
