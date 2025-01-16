@@ -1,34 +1,32 @@
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
-# with open('models.html', 'r', encoding='utf-8') as file:
-#     html_content = file.read()
+with open('C:/Users/ajayg/OneDrive/Desktop/pro2/SmartDealFinder/models.html', 'r', encoding='utf-8') as file:
+    html_content = file.read()
 
-# soup = BeautifulSoup(html_content, 'lxml')
+soup = BeautifulSoup(html_content, 'lxml')
 
-# model_images = soup.find_all('img', alt=True)
+model_images = soup.find_all('img', alt=True)
 
-# model_names = [img['alt'] for img in model_images ]
+model_names = [img['alt'] for img in model_images ]
 
-# samsung_dict  = {'samsung' :[]}
-# for name in model_names:
-#     samsung_dict['samsung'].append(name)
+samsung_dict  = {'samsung' :[]}
+for name in model_names:
+    samsung_dict['samsung'].append(name)
 
-# print(samsung_dict)
+print(samsung_dict)
 
+print()
 
 ############################################################################
 
 from bs4 import BeautifulSoup
 
-with open('apple_models.html','r', encoding='utf-8') as file:
+with open('SmartDealFinder/apple_models.html','r', encoding='utf-8') as file:
     html_content = file.read()
     
 soup = BeautifulSoup(html_content,'lxml')
 
-# container = soup.find_all('div',{'class':'w-1/3 sm:w-auto sm:col-span-1 h-auto sm:max-h-56 sm:rounded-lg border-b border-r border-gray-200 border-solid sm:shadow-md flex flex-col'})
 
-# for i in container:
-#     print(i.find("title"))
 
 model_images = soup.find_all('img',alt=True)
 
@@ -40,10 +38,19 @@ for name in model_names:
     
 print(apple_dict)    
 
-import pandas as pd 
-df=pd.DataFrame({
-    'model':apple_dict
-})
+print()
 
-print(df.head())
+oneplus_list = []
+
+with open('SmartDealFinder/oneplus_models.html','r', encoding='utf-8') as file:
+    html_content = file.read()
+
+soup = BeautifulSoup(html_content, 'lxml')
+
+for i in soup.find_all('div', class_ = 'flex flex-col items-center justify-center cursor-pointer w-full h-full bg-primary-bg p-2 sm:p-4 sm:min-w-full rounded-0 sm:rounded-xl sm:shadow-md sm:max-h-56 sm:max-w-40') :
+
+    oneplus_list.append(i.find('span', class_ = 'caption text-center line-clamp-3').text.strip())
+
+
+print(oneplus_list)    
     
