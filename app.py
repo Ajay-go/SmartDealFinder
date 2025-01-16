@@ -3,6 +3,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+import time
+from selenium.webdriver.common.by import By
 
 s = Service(ChromeDriverManager().install())
 options = Options()
@@ -30,11 +32,10 @@ def scrape_samsung():
     # Extract the phone model data from the loaded page
     target_div = driver.find_element(By.XPATH, '/html/body/main/main/div/div[2]/div[2]/div[1]/div/div/div/div[4]')
     div_html = target_div.get_attribute('outerHTML')
-    with open('samsung_models.html', 'w', encoding='utf-8') as f:
-        f.write(div_html)
+    # with open('samsung_models.html', 'w', encoding='utf-8') as f:
+    #     f.write(div_html)
 
-    with open('samsung_models.html', 'r', encoding='utf-8') as file:
-        html_content = file.read()
+
 
 
 
@@ -60,22 +61,19 @@ def scrape_apple():
 
     # Extract the phone model data from the loaded page
     target_div = driver.find_element(by=By.XPATH, value='//*[@id="__csh"]/main/main/div/div[2]/div[2]/div[1]/div/div/div/div[3]/div')
-    div_html = target_div.get_attribute('outerHTML')
-    with open('apple_models.html', 'w', encoding='utf-8') as f:
-        f.write(div_html)
+    # div_html = target_div.get_attribute('outerHTML')
+    # # with open('apple_models.html', 'w', encoding='utf-8') as f:
+    # #     f.write(div_html)
 
     
-
-
-# Scrape both Apple and Samsung data
-samsung_data = scrape_samsung()
-apple_data = scrape_apple()
 def scrape_oneplus() :
     driver.get('https://www.cashify.in/sell-old-mobile-phone/sell-oneplus')
     
     web_page = driver.page_source
     
-    with open('oneplus_models.html', 'w', encoding= 'utf-8') as f :
-        f.write(web_page)
+    # with open('oneplus_models.html', 'w', encoding= 'utf-8') as f :
+    #     f.write(web_page)
     
 scrape_oneplus()
+scrape_apple()
+scrape_samsung()
