@@ -12,7 +12,7 @@ On virtual environment
   3. python -m venv venv
   4. .\venv\Scripts\activate
   5. source venv/bin/activate
-  6. pip install -r requirements.txt
+  6. pip install -r requirement.txt
   7. write streamlit run data.py
 
 
