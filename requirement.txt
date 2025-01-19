@@ -1,0 +1,6 @@
+selenium==4.10.0
+amazoncaptcha==1.0.1
+beautifulsoup4==4.12.2
+webdrivermanager==0.4.5
+streamlit==1.22.0
+time==0.0.4
